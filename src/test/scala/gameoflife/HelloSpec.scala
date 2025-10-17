@@ -1,8 +1,8 @@
-package example
+package gameoflife
 
 import org.scalatest.freespec.AnyFreeSpec
 
-class HelloSpec extends AnyFreeSpec {
+class GameOfLifeSpec extends AnyFreeSpec {
   "Simple test" - {
     "should pass" in {
       assert(true)

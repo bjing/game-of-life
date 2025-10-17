@@ -1,1 +1,2 @@
-# scala-project-template-sbt
+# Game of Life
+TBD
