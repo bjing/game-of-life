@@ -5,9 +5,12 @@ import cats.implicits._
 import cats.syntax.all._  // for traverse_
 
 type Cell = (Int, Int)
+// TODO no need for map because boolean value is redundant
+// However, the constant-time access of a Map is efficient for updating states
+// Think over it once tests are done
 type Matrix = Map[Cell, Boolean]
-val MatrixSize = 200
-val Generations = 100
+val MatrixSize = 200 // 200 x 200
+val Generations = 100 //
 
 object GameOfLife {
   def runGame(matrix: Matrix, matrixSize: Int, generations: Int): IO[Unit] = {
@@ -23,26 +26,29 @@ object GameOfLife {
     }.toMap
   }
 
-  // TODO test
+  // Generate next state for matrix
+  // Only store live cells coordinates in Map
   def nextGeneration(matrix: Matrix, matrixSize: Int): Matrix = {
     val newState =
-      for {
-        x <- 1 to matrixSize
-        y <- 1 to matrixSize
+      (for {
+        x <- 0 until matrixSize
+        y <- 0 until matrixSize
       } yield {
         val nextState = nextStateForCell((x, y), matrix)
-        ((x, y), nextState)
-      }
+        if nextState then Some((x, y), nextState)
+        else None
+      }).flatten
 
     newState.toMap
   }
 
   // Calculate next state for given cell coordinates
-  // TODO test
   def nextStateForCell(cell: Cell, matrix: Matrix): Boolean = {
     val neighbourStates = cell match {
-      case (x, y) => {
+      case (x, y) =>
         List(
+          // No need to consider coordinates that are out of range, cuz that
+          // out of range cell would be equivalent to a dead cell (false)
           matrix.getOrElse((x - 1, y - 1), false),
           matrix.getOrElse((x, y - 1), false),
           matrix.getOrElse((x + 1, y - 1), false),
@@ -52,11 +58,10 @@ object GameOfLife {
           matrix.getOrElse((x, y + 1), false),
           matrix.getOrElse((x + 1, y + 1), false),
         )
-      }
     }
 
     val currentState = matrix.getOrElse(cell, false)
-    val numLiveNeighbours = neighbourStates.length
+    val numLiveNeighbours = neighbourStates.count(_ == true)
 
     if !currentState then {
       if numLiveNeighbours == 3 then true
