@@ -8,7 +8,8 @@ object Main extends IOApp.Simple {
     for {
       matrix <- IO.pure(
         // TODO read initial cells from command line
-        GameOfLife.initMatrix(List((1, 1)))
+//        GemeOfLife.initMatrix(List((1, 1)))
+        GameOfLife.initMatrix(List((5, 5), (6, 5), (7, 5), (5, 6), (6, 6), (7, 6)))
       )
       _ <- GameOfLife.runGame(matrix, MatrixSize, Generations)
     } yield ()

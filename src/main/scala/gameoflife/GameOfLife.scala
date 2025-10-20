@@ -14,10 +14,23 @@ val Generations = 100 //
 
 object GameOfLife {
   def runGame(matrix: Matrix, matrixSize: Int, generations: Int): IO[Unit] = {
-    (1 to generations).toList.traverse_ { gen =>
+    val result: List[Set[Cell]] = (1 to generations).toList.flatMap{ gen =>
       val newState = nextGeneration(matrix, matrixSize)
-      IO.println(s"$gen, ${newState.keySet}")
+      if newState.keySet.size.isEmpty then None
+      else Some(newState.keySet)
     }
+
+    if result.nonEmpty then
+      result.zip(1 to result.length).traverse_ (
+        (state, index) => {
+          val formattedState = state
+            .map { case (x, y) => s"[$x, $y]" }
+            .mkString("[", ", ", "]")
+          IO.println(s"$index: $formattedState")
+        }
+      )
+    else
+      IO.println("[]")
   }
 
   def initMatrix(liveCells: List[Cell]): Matrix = {
