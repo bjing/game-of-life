@@ -17,9 +17,10 @@ object GameOfLife {
     for {
       matrixStates <- IO.pure {
         // TODO bug found, we are not iterating on the previous state
+        // TODO We could fold over instead of flat mapping
         (1 to generations).toList.flatMap { gen =>
           val newState = nextGeneration(matrix, matrixSize)
-          if newState.keySet.size.isEmpty then None
+          if newState.keySet.isEmpty then None
           else Some(newState.keySet)
         }
       }
@@ -35,6 +36,8 @@ object GameOfLife {
     }.toMap
   }
 
+  // TODO make formatting a pure function, take out the printing action here
+  // TODO test the formatting function
   def printMatrixStates(matrixStates: List[Set[Cell]]): IO[Unit] =
     if matrixStates.nonEmpty then
       matrixStates
@@ -53,6 +56,9 @@ object GameOfLife {
   /*
     Generate next state for matrix
     Only store live cells coordinates in Map
+
+    TODO may not need to loop over every coordinate, think about how to do this once
+      we've fixed other bugs
    */
   def nextGeneration(matrix: Matrix, matrixSize: Int): Matrix = {
     val newState =
@@ -77,6 +83,7 @@ object GameOfLife {
         List(
           // No need to consider coordinates that are out of range, cuz that
           // out of range cell would be equivalent to a dead cell (false)
+          // TODO this is ugly
           matrix.getOrElse((x - 1, y - 1), false),
           matrix.getOrElse((x, y - 1), false),
           matrix.getOrElse((x + 1, y - 1), false),
