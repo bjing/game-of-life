@@ -16,95 +16,89 @@ object GameOfLife {
   def runGame(matrix: Matrix, matrixSize: Int, generations: Int): IO[Unit] =
     for {
       matrixStates <- IO.pure {
-        // TODO bug found, we are not iterating on the previous state
-        // TODO We could fold over instead of flat mapping
-        (1 to generations).toList.flatMap { gen =>
-          val newState = nextGeneration(matrix, matrixSize)
-          if newState.keySet.isEmpty then None
-          else Some(newState.keySet)
-        }
+        LazyList.iterate(matrix)(nextGeneration(_, matrixSize))
+          .slice(1, generations + 1)
+          .map(_.keySet)
+          .filter(_.nonEmpty)
+          .toList
       }
-      _ <- printMatrixStates(matrixStates)
-    } yield ()
+      formatted = formatMatrixStates(matrixStates)
+      _ <- formatted.traverse_(IO.println)
+    } yield {}
 
   /*
     Populate matrix Map with a list of live cell data
   */
-  def initMatrix(liveCells: List[Cell]): Matrix = {
+  def initMatrix(liveCells: Set[Cell]): Matrix = {
     liveCells.map {
       case (x, y) => ((x, y),  true)
     }.toMap
   }
 
-  // TODO make formatting a pure function, take out the printing action here
-  // TODO test the formatting function
-  def printMatrixStates(matrixStates: List[Set[Cell]]): IO[Unit] =
+  /*
+    Format a list of matrix states so that it can be printed out per the required output format
+   */
+  def formatMatrixStates(matrixStates: List[Set[Cell]]): List[String] =
     if matrixStates.nonEmpty then
       matrixStates
         .zip(1 to matrixStates.length)
-        .traverse_ (
+        .flatMap (
           (state, index) => {
-            val formattedState = state
+            val liveCells = state
               .map { case (x, y) => s"[$x, $y]" }
               .mkString("[", ", ", "]")
-            IO.println(s"$index: $formattedState")
+            List(s"$index: $liveCells")
           }
         )
     else
-      IO.println("[]")
+      List("[]")
 
   /*
     Generate next state for matrix
     Only store live cells coordinates in Map
-
-    TODO may not need to loop over every coordinate, think about how to do this once
-      we've fixed other bugs
    */
   def nextGeneration(matrix: Matrix, matrixSize: Int): Matrix = {
-    val newState =
-      (for {
-        x <- 0 until matrixSize
-        y <- 0 until matrixSize
-      } yield {
-        val nextState = nextStateForCell((x, y), matrix)
-        if nextState then Some((x, y), nextState)
-        else None
-      }).flatten
+    // When going through the matrix, only go through live cells and their neighbours
+    // instead of going through the whole matrix to be efficient.
+    // This is particularly efficient for sparse matrix
+    val relevantCells: Set[Cell] = {
+      matrix.keySet.flatMap { (x, y) =>
+        for {
+          dx <- -1 to 1
+          dy <- -1 to 1
+          currentX = x + dx
+          currentY = y + dy
+          if 0 <= currentX && currentX <= matrixSize && currentY >= 0 && currentY < matrixSize
+        } yield (currentX, currentY)
+      }
+    }
 
-    newState.toMap
+    // Calculate the next state for the relevant cells, and then filter only live Cells
+    relevantCells
+      .filter(nextStateForCell(_, matrix))
+      .map(_ -> true)
+      .toMap
   }
 
   /*
     Calculate next state for given cell coordinates
   */
   def nextStateForCell(cell: Cell, matrix: Matrix): Boolean = {
-    val neighbourStates = cell match {
-      case (x, y) =>
-        List(
-          // No need to consider coordinates that are out of range, cuz that
-          // out of range cell would be equivalent to a dead cell (false)
-          // TODO this is ugly
-          matrix.getOrElse((x - 1, y - 1), false),
-          matrix.getOrElse((x, y - 1), false),
-          matrix.getOrElse((x + 1, y - 1), false),
-          matrix.getOrElse((x - 1, y), false),
-          matrix.getOrElse((x + 1, y), false),
-          matrix.getOrElse((x - 1, y + 1), false),
-          matrix.getOrElse((x, y + 1), false),
-          matrix.getOrElse((x + 1, y + 1), false),
-        )
+    val (x, y) = cell
+    val neighbourStates = for {
+      dx <- -1 to 1
+      dy <- -1 to 1
+      if (dx, dy) != (0, 0)
+    } yield {
+      matrix.getOrElse((x + dx, y + dy), false)
     }
 
-    val currentState = matrix.getOrElse(cell, false)
+    val alive = matrix.getOrElse(cell, false)
     val numLiveNeighbours = neighbourStates.count(_ == true)
-
-    if !currentState then {
-      if numLiveNeighbours == 3 then true
-      else false
-    } else {
-      if numLiveNeighbours == 2 || numLiveNeighbours == 3 then
-        true
-      else false
+    (alive, numLiveNeighbours) match {
+      case (true, 2|3) => true
+      case (false, 3) => true
+      case _ => false
     }
   }
 }

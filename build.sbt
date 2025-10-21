@@ -14,8 +14,10 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % circeVersion,
 
   // config
-  "com.typesafe" % "config" % "1.4.2",
+  "com.typesafe" % "config" % "1.4.5",
 
   // testing
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+  "org.scalacheck" %% "scalacheck" % "1.19.0" % Test,
+  "org.scalameta" %% "munit-scalacheck" % "1.2.0" % Test,
 )

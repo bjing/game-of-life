@@ -5,13 +5,13 @@ import org.scalatest.freespec.AnyFreeSpec
 class GameOfLifeSpec extends AnyFreeSpec {
   "Game of Life" - {
     "should be able to initiate matrix with one live cell" in {
-      val cells = List((1, 1))
+      val cells = Set((1, 1))
       val matrix = GameOfLife.initMatrix(cells)
       assert(matrix == Map((1,1)->true))
     }
 
     "should be able to initiate matrix with multiple live cells" in {
-      val cells = List(
+      val cells = Set(
         (5, 5), (6, 5), (7, 5), (5, 6), (6, 6), (7, 6)
       )
       val matrix = GameOfLife.initMatrix(cells)
@@ -53,6 +53,26 @@ class GameOfLifeSpec extends AnyFreeSpec {
       val matrix = Map((0, 2) -> true, (1, 1) -> true, (1, 2) -> true)
       val newMatrix = GameOfLife.nextGeneration(matrix, 4)
       assert(newMatrix == matrix + ((0, 1) -> true))
+    }
+
+    "should format matrix with one state state for printing" in {
+      val matrixCells = List(Set((0, 2), (1, 1), (1, 2)))
+      val formatted = GameOfLife.formatMatrixStates(matrixCells)
+      val expected = List("1: [[0, 2], [1, 1], [1, 2]]")
+      assert(formatted == expected)
+    }
+
+    "should format matrix with multiple states for printing" in {
+      val matrixCells = List(
+        Set((0, 2), (1, 1), (1, 2)),
+        Set((0, 1), (1, 1), (1, 2), (2, 1))
+      )
+      val formatted = GameOfLife.formatMatrixStates(matrixCells)
+      val expected = List(
+        "1: [[0, 2], [1, 1], [1, 2]]",
+        "2: [[0, 1], [1, 1], [1, 2], [2, 1]]",
+      )
+      assert(formatted == expected)
     }
   }
 }
