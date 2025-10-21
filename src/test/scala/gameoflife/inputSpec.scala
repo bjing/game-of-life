@@ -2,12 +2,10 @@ package gameoflife
 
 import io.circe
 import io.circe.syntax.*
-import io.circe.Json
 import org.scalatest.freespec.AnyFreeSpec
 import munit.ScalaCheckSuite
-import org.scalacheck.{Gen, Test}
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
-import org.scalacheck.Test.Parameters
 
 class inputSpec extends AnyFreeSpec {
   "input parser" - {
@@ -46,20 +44,6 @@ class inputSpec extends AnyFreeSpec {
       assert(result.left.get.isInstanceOf[circe.ParsingFailure])
     }
   }
-
-  "file loader" - {
-    "should load file with exactly one line" in {
-
-    }
-
-    "should error when file is empty" in {
-
-    }
-
-    "should error when file contains more than one line" in {
-
-    }
-  }
 }
 
 class ParseLineSuccessPropertySpec extends ScalaCheckSuite:
@@ -95,20 +79,3 @@ class ParseLineErrorPropertySpec extends ScalaCheckSuite:
       true
     }
   }
-
-//  val malformedArrays: Gen[String] =
-//    Gen.oneOf(
-//      Gen.listOfN(5, Gen.choose(0, 100)).map(_.asJson.noSpaces), // array of Ints instead of pairs
-//      Gen.listOfN(3, Gen.const(List(1, 2, 3))).map(_.asJson.noSpaces), // wrong length
-//      Gen.listOfN(2, Gen.const(List(1))).map(_.asJson.noSpaces) // singleton lists
-//    )
-//
-//  property("parseLine should fail with DecodingFailure for malformed arrays") {
-//    forAll(malformedArrays) { s =>
-//      println(s"error input: $s")
-//      val result = Input.parseLine(s)
-//      assert(result.isLeft)
-//      assert(result.left.get.isInstanceOf[circe.DecodingFailure])
-//      true
-//    }
-//  }
