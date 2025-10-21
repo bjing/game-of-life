@@ -57,22 +57,28 @@ object GameOfLife {
   /*
     Generate next state for matrix
     Only store live cells coordinates in Map
-
-    TODO may not need to loop over every coordinate, think about how to do this once
-      we've fixed other bugs
    */
   def nextGeneration(matrix: Matrix, matrixSize: Int): Matrix = {
-    val newState =
-      (for {
-        x <- 0 until matrixSize
-        y <- 0 until matrixSize
-      } yield {
-        val nextState = nextStateForCell((x, y), matrix)
-        if nextState then Some((x, y), nextState)
-        else None
-      }).flatten
+    // When going through the matrix, only go through live cells and their neighbours
+    // instead of going through the whole matrix to be efficient.
+    // This is particularly efficient for sparse matrix
+    val relevantCells: Set[Cell] = {
+      matrix.keySet.flatMap { (x, y) =>
+        for {
+          dx <- -1 to 1
+          dy <- -1 to 1
+          currentX = x + dx
+          currentY = y + dy
+          if 0 <= currentX && currentX <= matrixSize && currentY >= 0 && currentY < matrixSize
+        } yield (currentX, currentY)
+      }
+    }
 
-    newState.toMap
+    // Calculate the next state for the relevant cells, and then filter only live Cells
+    relevantCells
+      .filter(nextStateForCell(_, matrix))
+      .map(_ -> true)
+      .toMap
   }
 
   /*
@@ -87,10 +93,9 @@ object GameOfLife {
     } yield {
       matrix.getOrElse((x + dx, y + dy), false)
     }
-      
+
     val alive = matrix.getOrElse(cell, false)
     val numLiveNeighbours = neighbourStates.count(_ == true)
-
     (alive, numLiveNeighbours) match {
       case (true, 2|3) => true
       case (false, 3) => true
