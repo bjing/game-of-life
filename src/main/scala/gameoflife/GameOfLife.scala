@@ -22,8 +22,9 @@ object GameOfLife {
           .filter(_.nonEmpty)
           .toList
       }
-      _ <- printMatrixStates(matrixStates)
-    } yield ()
+      formatted = formatMatrixStates(matrixStates)
+      _ <- formatted.traverse_(liveCells => IO.println(liveCells))
+    } yield {}
 
   /*
     Populate matrix Map with a list of live cell data
@@ -34,22 +35,24 @@ object GameOfLife {
     }.toMap
   }
 
-  // TODO make formatting a pure function, take out the printing action here
-  // TODO test the formatting function
-  def printMatrixStates(matrixStates: List[Set[Cell]]): IO[Unit] =
+
+  /*
+    Format a list of matrix states so that it can be printed out per the required output format
+   */
+  def formatMatrixStates(matrixStates: List[Set[Cell]]): List[String] =
     if matrixStates.nonEmpty then
       matrixStates
         .zip(1 to matrixStates.length)
-        .traverse_ (
+        .flatMap (
           (state, index) => {
-            val formattedState = state
+            val liveCells = state
               .map { case (x, y) => s"[$x, $y]" }
               .mkString("[", ", ", "]")
-            IO.println(s"$index: $formattedState")
+            List(s"$index: $liveCells")
           }
         )
     else
-      IO.println("[]")
+      List("[]")
 
   /*
     Generate next state for matrix
