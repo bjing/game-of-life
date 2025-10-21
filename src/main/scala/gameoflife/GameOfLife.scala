@@ -1,30 +1,27 @@
 package gameoflife
 
 import cats.effect.IO
-import cats.implicits._
-import cats.syntax.all._  // for traverse_
-
-type Cell = (Int, Int)
-// TODO no need for map because the boolean value are redundant
-// However, the constant-time access of a Map is efficient for updating states
-// Think over it once tests are done
-type Matrix = Map[Cell, Boolean]
-val MatrixSize = 200 // 200 x 200
-val Generations = 100 //
+import cats.implicits.*
+import cats.syntax.all.*
+import gameoflife.constants.{Generations, MatrixSize}
+import gameoflife.types.{Cell, Matrix}  // for traverse_
 
 object GameOfLife {
-  def runGame(matrix: Matrix, matrixSize: Int, generations: Int): IO[Unit] =
-    for {
-      matrixStates <- IO.pure {
-        LazyList.iterate(matrix)(nextGeneration(_, matrixSize))
-          .slice(1, generations + 1)
-          .map(_.keySet)
-          .filter(_.nonEmpty)
-          .toList
-      }
-      formatted = formatMatrixStates(matrixStates)
-      _ <- formatted.traverse_(IO.println)
-    } yield {}
+  def runGame(initCells: Set[Cell], matrixSize: Int, generations: Int): IO[Unit] = {
+    val matrix = initMatrix(initCells)
+
+    // keep iterating and generating a new matrix of cells based on the previous generation
+    val matrixStates =
+      LazyList.iterate(matrix)(nextGeneration(_, matrixSize))
+        .slice(1, generations + 1)
+        .map(_.keySet)
+        .filter(_.nonEmpty)
+        .toList
+
+    // format all generation of matrix and print them out
+    val formatted = formatMatrixStates(matrixStates)
+    formatted.traverse_(IO.println)
+  }
 
   /*
     Populate matrix Map with a list of live cell data
@@ -41,13 +38,13 @@ object GameOfLife {
   def formatMatrixStates(matrixStates: List[Set[Cell]]): List[String] =
     if matrixStates.nonEmpty then
       matrixStates
-        .zip(1 to matrixStates.length)
+        .zipWithIndex
         .flatMap (
           (state, index) => {
             val liveCells = state
               .map { case (x, y) => s"[$x, $y]" }
               .mkString("[", ", ", "]")
-            List(s"$index: $liveCells")
+            List(s"${index+1}: $liveCells")
           }
         )
     else
@@ -66,10 +63,10 @@ object GameOfLife {
         for {
           dx <- -1 to 1
           dy <- -1 to 1
-          currentX = x + dx
-          currentY = y + dy
-          if 0 <= currentX && currentX <= matrixSize && currentY >= 0 && currentY < matrixSize
-        } yield (currentX, currentY)
+          newX = x + dx
+          newY = y + dy
+          if newX >= 0 && newX < matrixSize && newY >= 0 && newY < matrixSize
+        } yield (newX, newY)
       }
     }
 
