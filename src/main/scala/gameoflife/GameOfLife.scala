@@ -35,7 +35,6 @@ object GameOfLife {
     }.toMap
   }
 
-
   /*
     Format a list of matrix states so that it can be printed out per the required output format
    */
