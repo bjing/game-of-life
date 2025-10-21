@@ -5,13 +5,13 @@ import org.scalatest.freespec.AnyFreeSpec
 class GameOfLifeSpec extends AnyFreeSpec {
   "Game of Life" - {
     "should be able to initiate matrix with one live cell" in {
-      val cells = List((1, 1))
+      val cells = Set((1, 1))
       val matrix = GameOfLife.initMatrix(cells)
       assert(matrix == Map((1,1)->true))
     }
 
     "should be able to initiate matrix with multiple live cells" in {
-      val cells = List(
+      val cells = Set(
         (5, 5), (6, 5), (7, 5), (5, 6), (6, 6), (7, 6)
       )
       val matrix = GameOfLife.initMatrix(cells)

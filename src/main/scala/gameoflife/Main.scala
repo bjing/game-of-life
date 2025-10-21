@@ -1,16 +1,21 @@
 package gameoflife
 
-import cats.effect.{IO, IOApp}
+import cats.effect.{ExitCode, IO, IOApp}
 import gameoflife.GameOfLife
 
-object Main extends IOApp.Simple {
-  def run: IO[Unit] =
-    for {
-      matrix <- IO.pure(
-        // TODO read initial cells from command line
-//        GameOfLife.initMatrix(List((1, 1)))
-        GameOfLife.initMatrix(List((5, 5), (6, 5), (7, 5), (5, 6), (6, 6), (7, 6)))
-      )
-      _ <- GameOfLife.runGame(matrix, MatrixSize, Generations)
-    } yield ()
+object Main extends IOApp {
+  def run(args: List[String]): IO[ExitCode] = {
+    args match
+    case input :: Nil =>
+      (for {
+        cells <- IO.fromEither(Input.parseInput(input))
+        matrix = GameOfLife.initMatrix(cells)
+        _ <- GameOfLife.runGame(matrix, MatrixSize, Generations)
+      } yield ExitCode.Success)
+        .handleErrorWith { e =>
+          IO.println(s"Error: ${e.getMessage}").as(ExitCode.Error)
+        }
+    case _ =>
+      IO.println("Usage: sbt run -- <input string>").as(ExitCode.Error)
+  }
 }

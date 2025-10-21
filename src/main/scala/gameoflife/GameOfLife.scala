@@ -23,13 +23,13 @@ object GameOfLife {
           .toList
       }
       formatted = formatMatrixStates(matrixStates)
-      _ <- formatted.traverse_(liveCells => IO.println(liveCells))
+      _ <- formatted.traverse_(IO.println)
     } yield {}
 
   /*
     Populate matrix Map with a list of live cell data
   */
-  def initMatrix(liveCells: List[Cell]): Matrix = {
+  def initMatrix(liveCells: Set[Cell]): Matrix = {
     liveCells.map {
       case (x, y) => ((x, y),  true)
     }.toMap
