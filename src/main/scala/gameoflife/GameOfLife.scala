@@ -16,13 +16,11 @@ object GameOfLife {
   def runGame(matrix: Matrix, matrixSize: Int, generations: Int): IO[Unit] =
     for {
       matrixStates <- IO.pure {
-        // TODO bug found, we are not iterating on the previous state
-        // TODO We could fold over instead of flat mapping
-        (1 to generations).toList.flatMap { gen =>
-          val newState = nextGeneration(matrix, matrixSize)
-          if newState.keySet.isEmpty then None
-          else Some(newState.keySet)
-        }
+        LazyList.iterate(matrix)(nextGeneration(_, matrixSize))
+          .slice(1, generations + 1)
+          .map(_.keySet)
+          .filter(_.nonEmpty)
+          .toList
       }
       _ <- printMatrixStates(matrixStates)
     } yield ()
