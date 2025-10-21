@@ -79,33 +79,22 @@ object GameOfLife {
     Calculate next state for given cell coordinates
   */
   def nextStateForCell(cell: Cell, matrix: Matrix): Boolean = {
-    val neighbourStates = cell match {
-      case (x, y) =>
-        List(
-          // No need to consider coordinates that are out of range, cuz that
-          // out of range cell would be equivalent to a dead cell (false)
-          // TODO this is ugly
-          matrix.getOrElse((x - 1, y - 1), false),
-          matrix.getOrElse((x, y - 1), false),
-          matrix.getOrElse((x + 1, y - 1), false),
-          matrix.getOrElse((x - 1, y), false),
-          matrix.getOrElse((x + 1, y), false),
-          matrix.getOrElse((x - 1, y + 1), false),
-          matrix.getOrElse((x, y + 1), false),
-          matrix.getOrElse((x + 1, y + 1), false),
-        )
+    val (x, y) = cell
+    val neighbourStates = for {
+      dx <- -1 to 1
+      dy <- -1 to 1
+      if (dx, dy) != (0, 0)
+    } yield {
+      matrix.getOrElse((x + dx, y + dy), false)
     }
-
-    val currentState = matrix.getOrElse(cell, false)
+      
+    val alive = matrix.getOrElse(cell, false)
     val numLiveNeighbours = neighbourStates.count(_ == true)
 
-    if !currentState then {
-      if numLiveNeighbours == 3 then true
-      else false
-    } else {
-      if numLiveNeighbours == 2 || numLiveNeighbours == 3 then
-        true
-      else false
+    (alive, numLiveNeighbours) match {
+      case (true, 2|3) => true
+      case (false, 3) => true
+      case _ => false
     }
   }
 }
