@@ -1,6 +1,6 @@
 package gameoflife
 
-object types {
+object Types {
   /*
     Type of the matrix/grid
   

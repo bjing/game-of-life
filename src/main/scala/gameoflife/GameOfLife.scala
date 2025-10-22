@@ -3,8 +3,7 @@ package gameoflife
 import cats.effect.IO
 import cats.implicits.*
 import cats.syntax.all.*
-import gameoflife.constants.{Generations, MatrixSize}
-import gameoflife.types.{Cell, Matrix}  // for traverse_
+import gameoflife.Types.{Cell, Matrix}  // for traverse_
 
 object GameOfLife {
   def runGame(initCells: Set[Cell], matrixSize: Int, generations: Int): IO[Unit] = {

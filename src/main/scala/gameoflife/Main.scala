@@ -2,7 +2,7 @@ package gameoflife
 
 import cats.effect.{ExitCode, IO, IOApp}
 import gameoflife.GameOfLife
-import gameoflife.constants.{Generations, MatrixSize}
+import gameoflife.Constants.{Generations, MatrixSize}
 
 object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] = {
