@@ -61,9 +61,8 @@ class ParseLineSuccessPropertySpec extends ScalaCheckSuite:
   property("parseLine should succeed on valid JSON") {
     forAll(validCellsJson) { jsonStr =>
       val result = Input.parseInput(jsonStr)
-      // Optional: check that the number of cells matches
+      // check that the number of cells matches
       result.foreach(cells => assert(cells.size <= 20))
-      true
     }
   }
 
@@ -76,6 +75,5 @@ class ParseLineErrorPropertySpec extends ScalaCheckSuite:
       val result = Input.parseInput(s)
       assert(result.isLeft)
       assert(result.left.get.isInstanceOf[circe.ParsingFailure])
-      true
     }
   }
