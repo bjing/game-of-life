@@ -2,16 +2,15 @@ package gameoflife
 
 import cats.effect.{ExitCode, IO, IOApp}
 import gameoflife.GameOfLife
-import gameoflife.constants.{Generations, MatrixSize}
 
 object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] = {
     args match
       case input :: Nil =>
         (for {
-          initCells <- IO.fromEither(Input.parseInput(input))
-          _ <- GameOfLife.runGame(initCells, MatrixSize, Generations)
+          _ <- GameOfLife.run(input)
         } yield ExitCode.Success)
+          // catch and handle error from the above IO sequence
           .handleErrorWith { e =>
             IO.println(s"Error: ${e.getMessage}").as(ExitCode.Error)
           }
