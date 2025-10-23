@@ -4,6 +4,13 @@ import org.scalatest.freespec.AnyFreeSpec
 
 class GameOfLifeSpec extends AnyFreeSpec {
   "Game of Life" - {
+    "should produce empty result for a single cell matrix after 100 generations" in {
+      val liveCells = Set((1, 1))
+      val result = GameOfLife.simulate(liveCells, 200, 100)
+
+      assert(result == List())
+    }
+
     "should produce the correct number of generations" in {
       val liveCells = Set((0, 2), (1, 1), (1, 2))
       val generations = 100

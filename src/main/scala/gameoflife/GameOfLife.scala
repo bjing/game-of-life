@@ -59,7 +59,7 @@ object GameOfLife {
 
     val relevantCells: Set[Cell] = matrix.flatMap(
       Matrix.getNeighbourCells(_, withinBoundsCondition)
-    )
+    ) ++ matrix
 
     // Calculate the next state for the relevant cells, while keeping only live Cells
     relevantCells.filter(nextStateForCell(_, matrix))
