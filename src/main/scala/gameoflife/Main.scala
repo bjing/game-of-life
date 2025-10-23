@@ -9,8 +9,8 @@ object Main extends IOApp {
     args match
       case input :: Nil =>
         (for {
-          initCells <- IO.fromEither(Input.parseInput(input))
-          _ <- GameOfLife.runGame(initCells, MatrixSize, Generations)
+          initMatrix <- IO.fromEither(Input.parseInput(input))
+          _ <- GameOfLife.runGame(initMatrix, MatrixSize, Generations)
         } yield ExitCode.Success)
           .handleErrorWith { e =>
             IO.println(s"Error: ${e.getMessage}").as(ExitCode.Error)
