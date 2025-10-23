@@ -2,7 +2,6 @@ package gameoflife
 
 import cats.effect.{ExitCode, IO, IOApp}
 import gameoflife.GameOfLife
-import gameoflife.Constants.{Generations, MatrixSize}
 
 object Main extends IOApp {
   def run(args: List[String]): IO[ExitCode] = {
@@ -10,7 +9,7 @@ object Main extends IOApp {
       case input :: Nil =>
         (for {
           initMatrix <- IO.fromEither(Input.parseInput(input))
-          _ <- GameOfLife.runGame(initMatrix, MatrixSize, Generations)
+          _ <- GameOfLife.runGame(initMatrix, Matrix.MatrixSize, Matrix.Generations)
         } yield ExitCode.Success)
           .handleErrorWith { e =>
             IO.println(s"Error: ${e.getMessage}").as(ExitCode.Error)

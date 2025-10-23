@@ -30,13 +30,13 @@ class GameOfLifeSpec extends AnyFreeSpec {
 
     "should get matrix state for next generation" in {
       val liveCells = Set((0, 2), (1, 1), (1, 2))
-      val newLiveCells= GameOfLife.nextGeneration(liveCells, 4)
+      val newLiveCells= GameOfLife.nextStateForMatrix(liveCells, 4)
       assert(newLiveCells == liveCells + ((0, 1)))
     }
 
     "should format matrix with one state for printing" in {
       val matrixCells = List(Set((0, 2), (1, 1), (1, 2)))
-      val formatted = GameOfLife.formatStates(matrixCells)
+      val formatted = Matrix.formatMatrix(matrixCells)
       val expected = List("1: [[0, 2], [1, 1], [1, 2]]")
       assert(formatted == expected)
     }
@@ -46,7 +46,7 @@ class GameOfLifeSpec extends AnyFreeSpec {
         Set((0, 2), (1, 1), (1, 2)),
         Set((0, 1), (1, 1), (1, 2), (2, 1))
       )
-      val formatted = GameOfLife.formatStates(matrixCells)
+      val formatted = Matrix.formatMatrix(matrixCells)
       val expected = List(
         "1: [[0, 2], [1, 1], [1, 2]]",
         "2: [[0, 1], [1, 1], [1, 2], [2, 1]]",

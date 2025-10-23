@@ -1,7 +1,7 @@
 package gameoflife
 
 import cats.effect.{IO, Resource}
-import gameoflife.Types.Cell
+import gameoflife.Matrix.Cell
 import io.circe
 
 import scala.io.Source
