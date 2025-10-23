@@ -24,8 +24,9 @@ object Input {
   }
 
   ////////////////////////////////////////////////////////////////////////////////
-  // The following functions are not part of the requirements, but I made them
-  // to make the interviewer's job easier */
+  // The following functions are not part of the requirements, but I wrote them
+  // in an attempt to make the interviewer's job easier. However, they didn't end up
+  // being used */
   /////////////////////////////////////////////////////////////////////////////////
 
   /**

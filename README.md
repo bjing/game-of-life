@@ -13,9 +13,14 @@ without having to resort to mocking.
 
 ### Data structure considerations
 I initially implemented the data structure as a Map. However, as the matrix gets bigger, 
-it can be wasteful for storage space, so I changed it to storing only the live cells in the
-Map. This is actually equivalent to storing the live cells in a Set, and therefore the data
-structure evolved from a Map to a Set storing only live cells.
+it can be wasteful for storage space, especially for sparse matrix, so I changed it to storing 
+only the live cells in the Map. 
+
+This is actually equivalent to storing the live cells in a Set as both have an average 
+case of `O(1)` time complexity for adding and removing, and worst case of `O(n)`/`O(logn)` time
+complexity for the same actions depending on the underlying implementation.
+
+Therefore, the data structure evolved from a Map to a Set storing only live cells.
 
 ### Other considerations
 I coded the matrix size `200` and the generations to run `100` as constants.
