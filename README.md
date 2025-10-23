@@ -28,6 +28,16 @@ I coded the matrix size `200` and the generations to run `100` as constants.
 These could be extracted as command line arguments or made configurable in a config file. 
 I didn't do either to keep the program simple.
 
+## Prerequisite
+`sbt` is the required build tool.
+
+For MacOS, install it using brew:
+```shell
+brew install sbt
+```
+
+For Linux, follow [this guide](https://www.scala-sbt.org/1.x/docs/Installing-sbt-on-Linux.html)
+
 ## How to run the program
 ```shell
 ./run "input string"
