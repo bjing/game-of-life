@@ -1,21 +1,17 @@
 package gameoflife
 
 object Matrix {
-  /*
-    Type of the matrix/grid
-
-    We are only store live cells
-   */
+  /** Type of the matrix/grid that stores live cells */
   type Matrix = Set[Cell]
 
-  /* a cell is represented by a tuple */ 
+  /** a cell is represented by a tuple */
   type Cell = (Int, Int)
 
-  // Constantts
+  // Constants
   val MatrixSize = 200 // 200 x 200
-  val Generations = 99 //
+  val Generations = 100 //
 
-  /*
+  /**
     Get all the neighbouring cells that satisfy a certain condition
 
     @param cell: the cell in question
@@ -33,7 +29,7 @@ object Matrix {
     neighbourCells.toSet
   }
 
-  /*
+  /**
     Format a list of matrix states so that it can be printed out per the required output format
    */
   def formatMatrix(matrixStates: List[Matrix]): List[String] =

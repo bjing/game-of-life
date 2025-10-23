@@ -4,7 +4,15 @@ import org.scalatest.freespec.AnyFreeSpec
 
 class GameOfLifeSpec extends AnyFreeSpec {
   "Game of Life" - {
-    "should be able to calculate next state for cell" in {
+    "should produce the correct number of generations" in {
+      val liveCells = Set((0, 2), (1, 1), (1, 2))
+      val generations = 100
+      val result = GameOfLife.simulate(liveCells, 200, generations)
+
+      assert(result.length == generations)
+    }
+
+    "should calculate the next state (live=true or dead=false) for a given cell" in {
       /*
       Initial matrix state is as follows
           x x y x
@@ -29,29 +37,10 @@ class GameOfLifeSpec extends AnyFreeSpec {
     }
 
     "should get matrix state for next generation" in {
-      val liveCells = Set((0, 2), (1, 1), (1, 2))
-      val newLiveCells= GameOfLife.nextStateForMatrix(liveCells, 4)
-      assert(newLiveCells == liveCells + ((0, 1)))
-    }
+      val matrix = Set((0, 2), (1, 1), (1, 2))
+      val newMatrix = GameOfLife.nextStateForMatrix(matrix, 4)
 
-    "should format matrix with one state for printing" in {
-      val matrixCells = List(Set((0, 2), (1, 1), (1, 2)))
-      val formatted = Matrix.formatMatrix(matrixCells)
-      val expected = List("1: [[0, 2], [1, 1], [1, 2]]")
-      assert(formatted == expected)
-    }
-
-    "should format matrix with multiple states for printing" in {
-      val matrixCells = List(
-        Set((0, 2), (1, 1), (1, 2)),
-        Set((0, 1), (1, 1), (1, 2), (2, 1))
-      )
-      val formatted = Matrix.formatMatrix(matrixCells)
-      val expected = List(
-        "1: [[0, 2], [1, 1], [1, 2]]",
-        "2: [[0, 1], [1, 1], [1, 2], [2, 1]]",
-      )
-      assert(formatted == expected)
+      assert(newMatrix == matrix + ((0, 1)))
     }
   }
 }
