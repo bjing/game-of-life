@@ -19,8 +19,8 @@ object GameOfLife {
       // initialise matrix
       initMatrix <- IO.fromEither(Input.parseInput(input))
       // Run the game simulation
-      results = GameOfLife.simulate(initMatrix, Matrix.MatrixSize, Matrix.Generations)
-      _ <- GameOfLife.printResults(results)
+      results = simulate(initMatrix, Matrix.MatrixSize, Matrix.Generations)
+      _ <- printResults(results)
     } yield ()
   }
 
